@@ -50,19 +50,19 @@ __int64 __fastcall main(int a1, char **a2, char **a3)
 
 下面是程序执行流程图：
 
-![星盟周报11.png](assets/img/pictureI/星盟周报11.png)
+![星盟周报11.png](/assets/img/pictureI/星盟周报11.png)
 
 根据上图流程，如果我们控制`exit`函数的finiarray，可以实现任意代码执行。
 
 ##### 1.2.2 dl_fini函数
 
-![](assets/img/pictureI/星盟周报1.png)
+![](/assets/img/pictureI/星盟周报1.png)
 
 `exit`函数执行的时候会调用`dl_fini`函数。
 
 本来l->l_addr为0，而l->l_info\[DT_FINI_ARRAY]->d_un.d_ptr指针指向程序中的fini_array段的地址，也就是l->l_info\[DT_FINI_ARRAY]->d_un.d_ptr的值为0x0000000000403D98
 
-![](assets/img/pictureI/星盟周报2.png)
+![](/assets/img/pictureI/星盟周报2.png)
 
 如果我们能控制**linkmap->l_addr**指针，就可以将程序偏移到我们写的位置，执行shellcode。
 需要注意这里存的是一个程序地址：0x401200，所以我们伪造`l_addr`的时候将偏移后的值改为shellcode的地址。
@@ -73,21 +73,21 @@ __int64 __fastcall main(int a1, char **a2, char **a3)
 
 首先，在main函数执行完毕之后会跳转到exit函数执行：
 
-![](assets/img/pictureI/星盟周报7.png)
+![](/assets/img/pictureI/星盟周报7.png)
 
 然后我们步进到exit函数中：
 
-![](assets/img/pictureI/星盟周报6.png)
+![](/assets/img/pictureI/星盟周报6.png)
 
 可见exit函数会调用一个叫`__run_exit_handlers`的函数
 继续步进，直到这个函数调用了`__dl_fini`函数，然后dl_fini函数会执行call rax地址：
-![](assets/img/pictureI/星盟周报5.png)
+![](/assets/img/pictureI/星盟周报5.png)
 
 具体查看rax地址是0x40406b，指向0x404073，其实这里已经是被我们修改了。原本rax应该是0x0403D98 -> 0x401200，原本是要去执行这个代码的：
-![](assets/img/pictureI/星盟周报8.png)
+![](/assets/img/pictureI/星盟周报8.png)
 
 dl_fini函数：
-![](assets/img/pictureI/星盟周报1.png)
+![](/assets/img/pictureI/星盟周报1.png)
 
 当我们修改了l_addr之后，array\[i]就可以被控制了。
 
@@ -97,11 +97,11 @@ dl_fini函数：
 
 前面我们说过了，在栈上有一个ld.so的地址残留，猜测是在动态链接的过程中残留在栈上的，对应这道题：
 
-![](assets/img/pictureI/星盟周报9.png)
+![](/assets/img/pictureI/星盟周报9.png)
 就是那个末尾是0x2e0的粉色的地址。里面存的值0x2d3就是723，这里是执行完格式化字符串漏洞，已经被我们修改过了。原本里面存的应该是0，对应的就是`l->l_addr = 0`
 
 具体在dl_fini函数中：
-![](assets/img/pictureI/星盟周报3.png)
+![](/assets/img/pictureI/星盟周报3.png)
 
 执行 `add rax,qword ptr [r15]` ，这个r15此时保存的就是栈上ld.so保存的那个数据，那么只要利用格式化字符串漏洞修改这个ld.so地址中存的值，就可以控制让rax中保存的值从0x401200+0x0 改为访问我们希望执行的shellcode的地址。
 这里就是对应`l->l_addr + l->l_info[DT_FINI_ARRAY]->d_un.d_ptr`，从而让fini_array被劫持。
@@ -111,10 +111,10 @@ dl_fini函数：
 ###### 这里插一嘴
 在执行dl_fini的过程中有几步rax的值是0x403e00：
 
-![](assets/img/pictureI/星盟周报10.png)
+![](/assets/img/pictureI/星盟周报10.png)
 
 这个其实是`.dynamic`节的地址，保存的是用于动态链接函数的信息表地址，或者其他什么地址。这个需要看具体值：
-![](assets/img/pictureI/星盟安全4.png)
+![](/assets/img/pictureI/星盟安全4.png)
 
 ###### 结构体如下：
 ```c
