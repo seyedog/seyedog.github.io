@@ -1,3 +1,11 @@
+---
+title: 格式化字符串漏洞之劫持dl.fini
+author: seyedog
+date: 2023-12-18 20:40:00 +0800
+categories: [Blogging, fmt]
+tags: [pwn]
+---
+
 
 ### 1. .fini_array劫持
 
