@@ -50,7 +50,7 @@ __int64 __fastcall main(int a1, char **a2, char **a3)
 
 下面是程序执行流程图：
 
-![](assets/img/pictureI/星盟周报11.png)
+![星盟周报11.png](assets/img/pictureI/星盟周报11.png)
 
 根据上图流程，如果我们控制`exit`函数的finiarray，可以实现任意代码执行。
 
