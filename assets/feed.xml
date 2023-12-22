@@ -1,4 +1,4 @@
-<!-- ---
+---
 layout: compress
 permalink: /feed.xml
 # Atom Feed, reference: https://validator.w3.org/feed/docs/atom.html
@@ -58,4 +58,4 @@ permalink: /feed.xml
 {% endfor %}
 </feed>
 {% endcapture %}
-{{ source | replace: '&', '&amp;' }} -->
+{{ source | replace: '&', '&amp;' }}

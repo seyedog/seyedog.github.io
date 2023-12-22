@@ -1,9 +1,9 @@
----
+-- -
 layout: compress
 permalink: '/app.js'
----
+    -- -
 
-const $notification = $('#notification');
+    const $notification = $('#notification');
 const $btnRefresh = $('#notification .toast-body>button');
 
 if ('serviceWorker' in navigator) {
@@ -44,4 +44,3 @@ if ('serviceWorker' in navigator) {
         }
     });
 }
-
